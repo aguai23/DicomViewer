@@ -6,16 +6,54 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const http = require('http').Server(app);
+const fs = require('fs');
+const DataParser = require('./DataParser');
+const io = require("socket.io")(http);
+let configFile = require("./config");
+let config = new configFile.Config();
 
 app.engine('html', require('ejs').renderFile);
 app.set('view engine','html');
 app.use(express.static(path.resolve(__dirname + "/../client")));
 app.use(express.static(path.resolve(__dirname + "/../")));
 
+let pid = 0;
+let socketClient = null;
 app.get('/', function (req, res) {
-   res.render(path.resolve(__dirname + "/../client/main.html"));
+    io.on('connection', function (socket) {
+        console.log("client is connected");
+        socketClient = socket;
+    });
+    pid = req.query.pid;
+    res.render(path.resolve(__dirname + "/../client/main.html"));
 });
 
-http.listen(3600, "127.0.0.1", () => {
-    console.log("server is running at http %s %d", "127.0.0.1",3600);
+
+
+let dataParser = null;
+let imageNumber = 0;
+app.get('/getImageCount', function (req, res) {
+    let dirPath = config.dirname + pid + "/";
+    fs.readdir(dirPath, function (err, list) {
+        dataParser = new DataParser(dirPath, list.length, registerUrls);
+        imageNumber = list.length;
+        res.end(String(list.length));
+
+    });
+
+});
+
+app.get('/getPixel', function (req, res) {
+    let index = req.query.index;
+    res.send(JSON.stringify({"pixel": dataParser.getPixel(index)}));
+    res.end();
+});
+
+
+let registerUrls = function () {
+    socketClient.emit("image","done");
+};
+
+http.listen(config.port, config.host, () => {
+    console.log("server is running at http %d %s", config.port, config.host);
 });

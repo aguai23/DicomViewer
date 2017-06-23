@@ -8,10 +8,51 @@ class ImageRender {
     /**
      * constructor
      * @param elementId the div id which to render image
+     * @param numberOfImage number of images of a seris
      */
-    constructor(elementId) {
+    constructor(elementId, numberOfImage) {
         this.element = document.getElementById(elementId);
         cornerstone.enable(this.element);
+        this.imageData = new ImageData(numberOfImage);
+        this.numberOfImage = numberOfImage;
+        this.index = 1
+    }
+
+    increaseSlice() {
+        if (this.index < this.numberOfImage) {
+            this.index ++;
+            this.setSlice(this.index);
+        }
+    }
+
+    decreaseSlice() {
+        if (this.index > 1) {
+            this.setSlice(--this.index);
+        }
+    }
+
+    setSlice(index) {
+        let pixelData = this.imageData.getSingleImage(index, this.element, this.renderImage);
+    }
+
+    renderImage(element, pixelData) {
+        console.log("render new image");
+        let image = {
+            imageId: "whatever",
+            minPixelValue:0,
+            maxPixelValue:4096,
+            slope:1,
+            intercept:-1024,
+            windowCenter: -600,
+            windowWidth: 1500,
+            getPixelData: function(){return pixelData},
+            columns: 512,
+            rows: 512,
+            width:512,
+            height:512,
+            sizeInBytes: 512*512*2
+        };
+        cornerstone.displayImage(element, image);
     }
 
     /**

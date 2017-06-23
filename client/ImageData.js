@@ -14,6 +14,7 @@ class ImageData {
         this.imageBuffer = new Uint16Array(this.imageSize * numberOfImage);
         this.loaded = new Array(numberOfImage).fill(false);
         this.xhttp = new XMLHttpRequest();
+        this.config = new config();
     }
 
     /**
@@ -21,31 +22,44 @@ class ImageData {
      * @param index the slice index of single image
      * @returns image object
      */
-    getSingleImage(index) {
+    getSingleImage(index, element, callback) {
+        let self = this;
         if (this.loaded[index]) {
             return this.imageBuffer.subarray(index * this.imageSize, (index + 1) * this.imageSize);
         } else {
-            let image = this.downloadImage(index);
-            this.imageBuffer.set(image, index * this.imageSize);
-            this.loaded[index] = true;
-            return image;
+            // download image
+            let url = "http://" + this.config.host + ":" + this.config.port + "/getPixel?index=" + index;
+            this.xhttp.onreadystatechange= function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    let result = JSON.parse(this.response);
+                    //console.log(Object.prototype.toString.call(result.pixel));
+                    let image = self.constructArray(result.pixel) ;
+                    console.log(image.length);
+                    self.setBuffer(self.imageBuffer, image, index * self.imageSize);
+                    self.loaded[index] = true;
+                    callback(element, image);
+                }
+            };
+            this.xhttp.open("GET", url, true);
+            this.xhttp.send();
+
         }
     }
 
-    /**
-     * get image from server via http
-     * @param index the image index
-     */
-    downloadImage(index) {
-        let url = index;
-        this.xhttp.onreadystatechange= function () {
-            if (this.readyState == 4 && this.status == 200) {
-                let image = new Uint16Array(this.response);
-                return image;
-            }
-        };
-        xhttp.open("GET", url, true);
-        xhttp.responseType = "arraybuffer";
-        xhttp.send();
+    constructArray(pixel) {
+        let length = Object.keys(pixel).length;
+        let array = new Uint16Array(length);
+        for (let i = 0; i < length; i++) {
+            array[i] = pixel[i + 1];
+        }
+        return array;
     }
+
+    setBuffer(source, dest, offset){
+        for(let i = 0; i < dest.length; i++) {
+            source[i + offset] = dest[i]
+        }
+    }
+
+
 }
