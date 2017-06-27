@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/main.css">
 <script type="text/javascript" src="../library/jquery/jquery-2.1.4.min.js"></script>
 <script type="text/javascript" src="../library/cornerstone.js"></script>
 <script type="text/javascript" src="../library/dicomParser.js"></script>
@@ -13,10 +15,22 @@
 <script type="text/javascript" src="./main.js"></script>
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>DicomViewer</title>
 </head>
-
 <body>
-    <div id="viewer" style="height: 512px;"></div>
+    <div class="top"></div>
+    <div class="container">
+        <div class="col-xs-3 left-container"></div>
+        <div class="col-xs-6 center-container">
+            <div id="viewer" class="viewer" >
+                <canvas class="drawCanvas" id="drawCanvas">
+                </canvas>
+            </div>
+        </div>
+        <div class="col-xs-3 right-container">
+
+        </div>
+    </div>
+    <div class="bottom"></div>
 </body>
 </html>

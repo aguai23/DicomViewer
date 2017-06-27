@@ -1,0 +1,33 @@
+.top{
+    height: 100px;
+    background-color: #7f7f7f;
+    width: 100%;
+    position: absolute;
+    left:0px;
+}
+.bottom{
+    position: absolute;
+    width: 100%;
+    bottom: 0px;
+    left:0px;
+    height: 100px;
+    background-color: #7f7f7f;
+}
+.container{
+    top:100px;
+    height: 84%;
+    position: absolute;
+    width: 100%;
+    left: 0px;
+}
+.viewer{
+    height: 800px;
+    width: 800px;
+}
+.drawCanvas{
+    height: 800px;
+    width: 800px;
+    position: absolute;
+    top: 0px;
+    z-index: 100;
+}

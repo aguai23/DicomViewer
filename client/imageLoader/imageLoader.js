@@ -10,7 +10,7 @@ class ImageLoader {
      */
     constructor(cornerstore) {
         this.cornerstone = cornerstore;
-        this.cornerstone.registerImageLoader("dicom", this.loadImage);
+        this.cornerstone.registerImageLoader("test", this.loadImage);
     }
 
     /**
@@ -27,6 +27,8 @@ class ImageLoader {
                 let dataset = dicomParser.parseDicom(buffer);
                 let pixelDataElement = dataset.elements.x7fe00010;
                 let pixelData = new Uint16Array(dataset.byteArray.buffer, pixelDataElement.dataOffset, pixelDataElement.length/2);
+                console.log(pixelDataElement.length);
+                console.log(dataset.string('x00280012'));
                 let image = {
                     imageId: imageId,
                     minPixelValue:0,
@@ -40,6 +42,8 @@ class ImageLoader {
                     rows: 512,
                     width:512,
                     height:512,
+                    clientHeight:800,
+                    clientWidth:800,
                     sizeInBytes: 512*512*2
                 };
                 defered.resolve(image);
