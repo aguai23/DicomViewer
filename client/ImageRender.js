@@ -9,15 +9,35 @@ class ImageRender {
      * constructor
      * @param elementId the div id which to render image
      * @param numberOfImage number of images of a seris
+     * @param dicomProperty
      */
-    constructor(elementId, numberOfImage) {
+    constructor(elementId, numberOfImage, dicomProperty) {
         this.element = document.getElementById(elementId);
         cornerstone.enable(this.element);
-        this.imageData = new ImageData(numberOfImage);
         this.numberOfImage = numberOfImage;
-        this.index = 1
+        this.index = 1;
+        this.imageLoader = new ImageLoader(cornerstone);
+        this.imageData = new ImageData(numberOfImage);
+        this.image = {
+            imageId: 0,
+            minPixelValue:dicomProperty.minPixelValue,
+            maxPixelValue:dicomProperty.maxPixelValue,
+            slope:dicomProperty.slope,
+            intercept:dicomProperty.intercept,
+            windowCenter: dicomProperty.windowCenter,
+            windowWidth: dicomProperty.windowWidth,
+            getPixelData: function(){},
+            columns: dicomProperty.columns,
+            rows: dicomProperty.rows,
+            width:dicomProperty.width,
+            height:dicomProperty.height,
+            sizeInBytes: dicomProperty.sizeInBytes
+        };
     }
 
+    /**
+     * increase slice number
+     */
     increaseSlice() {
         if (this.index < this.numberOfImage) {
             this.index ++;
@@ -25,35 +45,40 @@ class ImageRender {
         }
     }
 
+    /**
+     * decrease slice number
+     */
     decreaseSlice() {
         if (this.index > 1) {
-            this.setSlice(--this.index);
+            this.index --;
+            this.setSlice(this.index);
         }
     }
 
+    /**
+     * set slice number to index
+     * @param index the index jump to
+     */
     setSlice(index) {
-        let pixelData = this.imageData.getSingleImage(index, this.element, this.renderImage);
+        this.imageData.getSingleImage(index, this.element, this.renderImage, this);
     }
 
-    renderImage(element, pixelData) {
-        console.log("render new image");
-        let image = {
-            imageId: "whatever",
-            minPixelValue:0,
-            maxPixelValue:4096,
-            slope:1,
-            intercept:-1024,
-            windowCenter: -600,
-            windowWidth: 1500,
-            getPixelData: function(){return pixelData},
-            columns: 512,
-            rows: 512,
-            width:512,
-            height:512,
-            sizeInBytes: 512*512*2
+    /**
+     * render image, used as callback
+     * @param element the div element to render
+     * @param pixel image pixel
+     * @param index to specify different imageId
+     * @param self this object
+     */
+    renderImage(element, pixel, index, self){
+        self.image.imageId = index;
+        self.image.getPixelData = function () {
+            return pixel;
         };
-        cornerstone.displayImage(element, image);
+        cornerstone.displayImage(element,self.image);
     }
+
+
 
     /**
      * set window center

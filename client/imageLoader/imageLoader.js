@@ -1,6 +1,6 @@
 /**
  * author: yunzhe zhang
- * image loader for test
+ * image loader for rendering
  */
 class ImageLoader {
 
@@ -10,7 +10,7 @@ class ImageLoader {
      */
     constructor(cornerstore) {
         this.cornerstone = cornerstore;
-        this.cornerstone.registerImageLoader("test", this.loadImage);
+        this.cornerstone.registerImageLoader("dicom", this.loadImage);
     }
 
     /**
@@ -27,8 +27,6 @@ class ImageLoader {
                 let dataset = dicomParser.parseDicom(buffer);
                 let pixelDataElement = dataset.elements.x7fe00010;
                 let pixelData = new Uint16Array(dataset.byteArray.buffer, pixelDataElement.dataOffset, pixelDataElement.length/2);
-                console.log(pixelDataElement.length);
-                console.log(dataset.string('x00280012'));
                 let image = {
                     imageId: imageId,
                     minPixelValue:0,
@@ -47,15 +45,11 @@ class ImageLoader {
                 defered.resolve(image);
             }
         };
-        let urls = imageId.split(":")[1].substring(2);
-        urls = "http://127.0.0.1:4600/" + urls;
-        console.log(urls);
-
+        let urls = "http://127.0.0.1:3600/getPixel?index=" + imageId.split("//")[1];
         xhttp.open("GET", urls, true);
         xhttp.responseType = "arraybuffer";
         xhttp.send(null);
 
         return defered;
     }
-
 };
