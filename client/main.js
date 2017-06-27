@@ -13,20 +13,13 @@ let startApp = function () {
     });
 
     let socket = io();
+    let toolController = null;
     socket.on("image", function (msg) {
         imageRender = new ImageRender("viewer", imageNumber, msg);
         imageRender.setSlice(1);
+        toolController = new ToolController("viewer", imageRender);
     });
 
-    $("#viewer").bind("mousewheel", function (e) {
-        let event = window.event || e;
-        let up = event.wheelDelta > 0;
-        if (up) {
-            imageRender.increaseSlice();
 
-        } else {
-            imageRender.decreaseSlice();
-        }
-    });
 
 };
