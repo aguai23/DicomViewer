@@ -1,9 +1,17 @@
 /**
- * Created by tx-eva-11 on 17-6-22.
+ * Config class used in client
  */
-let config = function () {
+var config = function () {
 
-    this.host = "127.0.0.1";
+    /**
+     * serve host address
+     * @type {string}
+     */
+    this.host = "192.168.1.161";
 
+    /**
+     * server port number
+     * @type {number}
+     */
     this.port = 3600;
 };

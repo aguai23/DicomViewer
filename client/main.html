@@ -4,6 +4,8 @@
 <link rel="stylesheet" type="text/css" href="css/main.css">
 <script type="text/javascript" src="../library/jquery/jquery-2.1.4.min.js"></script>
 <script type="text/javascript" src="../library/cornerstone.js"></script>
+<script type="text/javascript" src="../library/cornerstoneMath.min.js"></script>
+<script type="text/javascript" src="../library/cornerstoneTools.js"></script>
 <script type="text/javascript" src="../library/dicomParser.js"></script>
 <script type="text/javascript" src="../library/socket.io.js"></script>
 <script type="text/javascript" src="../library/exampleImageIdLoader.js"></script>
@@ -18,13 +20,16 @@
     <title>DicomViewer</title>
 </head>
 <body>
-    <div class="top"></div>
+    <div class="top">
+        <button class="btn" id="scroll-btn">scroll</button>
+        <button class="btn" id="window-btn">wl/wc</button>
+        <button class="btn" id="zoom-btn">zoom/pan</button>
+        <button class="btn" id="draw-btn">draw</button>
+    </div>
     <div class="container">
         <div class="col-xs-3 left-container"></div>
         <div class="col-xs-6 center-container">
             <div id="viewer" class="viewer" >
-                <canvas class="drawCanvas" id="drawCanvas">
-                </canvas>
             </div>
         </div>
         <div class="col-xs-3 right-container">

@@ -9,8 +9,8 @@ const http = require('http').Server(app);
 const fs = require('fs');
 const DataParser = require('./DataParser');
 const io = require("socket.io")(http);
-let configFile = require("./config");
-let config = new configFile.Config();
+var configFile = require("./config");
+var config = new configFile.Config();
 
 //set up the environment
 app.engine('html', require('ejs').renderFile);
@@ -19,8 +19,8 @@ app.use(express.static(path.resolve(__dirname + "/../client")));
 app.use(express.static(path.resolve(__dirname + "/../")));
 
 //responsible for rendering html
-let pid = 0;
-let socketClient = null;
+var pid = 0;
+var socketClient = null;
 app.get('/', function (req, res) {
     io.on('connection', function (socket) {
         console.log("client is connected");
@@ -32,12 +32,13 @@ app.get('/', function (req, res) {
 
 
 //responsible for get the image count
-let dataParser = null;
-let imageNumber = 0;
+var dataParser = null;
+var imageNumber = 0;
 app.get('/getImageCount', function (req, res) {
-    let dirPath = config.dirname + pid + "/";
+    var dirPath = config.dirname + pid + "/";
     fs.readdir(dirPath, function (err, list) {
         dataParser = new DataParser(dirPath, list.length, registerUrls);
+        dataParser.setup();
         imageNumber = list.length;
         res.end(String(list.length));
 
@@ -46,16 +47,16 @@ app.get('/getImageCount', function (req, res) {
 
 //get the pixel data in json
 app.get('/getPixel', function (req, res) {
-    let index = req.query.index;
+    var index = req.query.index;
     res.send(dataParser.getPixel(index));
     res.end();
 });
 
 
-let registerUrls = function (property) {
+var registerUrls = function (property) {
     socketClient.emit("image",property);
 };
 
-http.listen(config.port, config.host, () => {
+http.listen(config.port, config.host, function() {
     console.log("server is running at http %d %s", config.port, config.host);
 });

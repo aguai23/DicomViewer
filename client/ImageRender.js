@@ -12,7 +12,7 @@ class ImageRender {
      * @param dicomProperty
      */
     constructor(elementId, numberOfImage, dicomProperty) {
-        this.element = document.getElementById(elementId);
+        this.element = $("#" + elementId).get(0);
         cornerstone.enable(this.element);
         this.numberOfImage = numberOfImage;
         this.index = 1;
@@ -31,9 +31,11 @@ class ImageRender {
             rows: dicomProperty.rows,
             width:dicomProperty.width,
             height:dicomProperty.height,
-            sizeInBytes: dicomProperty.sizeInBytes
+            sizeInBytes: dicomProperty.sizeInBytes,
+            render: cornerstone.renderGrayscaleImage
         };
     }
+
 
     /**
      * increase slice number

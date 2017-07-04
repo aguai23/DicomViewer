@@ -2,64 +2,84 @@
  * author: yunzhe
  * DataParser, responsible for parsing dicom data on serve side
  */
-const fs = require('fs');
-const path = require('path');
-const dicomParser = require('dicom-parser');
+var fs = require('fs');
+var path = require('path');
+var dicomParser = require('dicom-parser');
+
 /**
- *
- * @type {DataParser}
+ * The data parser on server side
+ * @param dir
+ * @param numberOfImage
+ * @param callback
+ * @returns {*}
  */
-module.exports = class DataParser {
+module.exports = function DataParser(dir, numberOfImage, callback) {
 
     /**
-     * constructor
-     * @param dir the dir containing the dicom images
-     * @param numberOfImage number of images in the dir
-     * @param callback called after image stored
+     * the image dir containing dicom
      */
-    constructor(dir, numberOfImage, callback) {
-        this.dicomProperty = {};
-        let self = this;
-        this.dicomArray = new Array(numberOfImage);
-        let count = 0;
-        fs.readdir(dir, function (err, list) {
-            list.forEach(function (file) {
-                let filepath = path.resolve(dir,file);
-                fs.readFile(filepath, (err,data) => {
+    this.dir = dir;
 
-                    let dataset = dicomParser.parseDicom(data);
+    /**
+     * number of images in the dir
+     */
+    this.numberOfImage = numberOfImage;
+
+    /**
+     * dicom property of this dicom seris
+     * @type {{}}
+     */
+    this.dicomProperty = {};
+
+    /**
+     * dicom array
+     * @type {Array}
+     */
+    this.dicomArray = new Array(this.numberOfImage);
+
+    /**
+     * set up function
+     */
+    this.setup = function () {
+        var self = this;
+        var count = 0;
+        fs.readdir(this.dir, function (err, list) {
+            list.forEach(function (file) {
+                var filepath = path.resolve(dir, file);
+                fs.readFile(filepath, function (err, data) {
+                    var dataset = dicomParser.parseDicom(data);
                     //console.log(Object.prototype.toString.call(dataset));
-                    let index = parseInt(dataset.string('x00200013'));
+                    var index = parseInt(dataset.string('x00200013'));
                     self.dicomArray[index - 1] = data;
                     count++;
-                    if(count == numberOfImage) {
+                    if (count == numberOfImage) {
                         self.constructProperty(self.dicomProperty, dataset);
                         callback(self.dicomProperty);
                     }
                 });
             });
         });
-    }
+    };
 
     /**
      * get pixel data
      * @param index the image index
      * @returns {Uint16Array}
      */
-    getPixel(index) {
-        let dataset = this.dicomArray[index - 1];
-        // let pixelDataElement = dataset.elements.x7fe00010;
+    this.getPixel = function(index) {
+        var dataset = this.dicomArray[index - 1];
+        // var pixelDataElement = dataset.elements.x7fe00010;
         // return new Uint16Array(dataset.byteArray.buffer, pixelDataElement.dataOffset, pixelDataElement.length/2);
         return dataset
 
-    }
+    };
 
     /**
      * get property of dicom in order to render
      * @param property dicom property object
      * @param dataset dicom dataset
      */
-    constructProperty(property, dataset) {
+    this.constructProperty = function(property, dataset) {
         property.minPixelValue = 0;
         property.maxPixelValue = 4096;
         property.slope = dataset.string('x00281053').length !== 0 ? parseInt(dataset.string('x00281053')):0;
