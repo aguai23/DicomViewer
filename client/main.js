@@ -35,14 +35,29 @@ let startApp = function () {
 let registerButton = function (toolController) {
     $("#scroll-btn").click(function (e) {
         toolController.setTools("scroll");
+        resetColor();
+        $("#scroll-btn").css("background-color","yellow");
     });
     $("#window-btn").click(function (e) {
         toolController.setTools("window");
+        resetColor();
+        $("#window-btn").css("background-color","yellow");
     });
     $("#zoom-btn").click(function (e) {
         toolController.setTools("zoom");
+        resetColor();
+        $("#zoom-btn").css("background-color","yellow");
     });
     $("#draw-btn").click(function (e) {
         toolController.setTools("draw");
+        resetColor();
+        $("#draw-btn").css("background-color","yellow");
     });
+};
+
+let resetColor = function () {
+    $("#scroll-btn").css("background-color","#66afe9");
+    $("#window-btn").css("background-color","#66afe9");
+    $("#zoom-btn").css("background-color","#66afe9");
+    $("#draw-btn").css("background-color","#66afe9");
 };

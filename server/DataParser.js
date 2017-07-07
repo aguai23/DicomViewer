@@ -95,7 +95,4 @@ module.exports = function DataParser(dir, numberOfImage, callback) {
         property.height = property.rows;
         property.sizeInBytes = property.rows * property.columns * 2;
     }
-
-
-
 };
